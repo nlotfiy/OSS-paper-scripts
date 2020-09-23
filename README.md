@@ -1,3 +1,5 @@
-# Use of Open-source Software Platforms in Mechatronics and Robotics Engineering Education
+# OSS paper code repository
 
-This GitHub repository houses the full scripts for the code snippets showcased in this paper.
+Use of Open-source Software Platforms in Mechatronics and Robotics Engineering Education
+
+This GitHub repository houses the full scripts for the code snippets shown in the paper titled, Use of Open-source Software Platforms in Mechatronics and Robotics Engineering Education.
