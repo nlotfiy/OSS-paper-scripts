@@ -1,4 +1,4 @@
-# OSS paper code repository
+# OSS Paper Code Repository
 
 Use of Open-source Software Platforms in Mechatronics and Robotics Engineering Education
 
