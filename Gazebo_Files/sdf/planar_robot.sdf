@@ -1,0 +1,227 @@
+<?xml version="1.0"?>
+
+<sdf version='1.4'>
+  
+  <model name="planar_robot">
+    <static>false</static>
+    
+    <link name='world'/>
+
+    <!-- Base link -->
+    <link name='base_link'>
+      <pose>0 0 0 0 0 0</pose>
+
+      <inertial>
+        <pose>0 0 0.00099 0 0 0</pose>
+        <inertia>
+          <ixx>1.11</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>100.11</iyy>
+          <iyz>0</iyz>
+          <izz>1.01</izz>
+        </inertia>
+        <mass>101.0</mass>
+      </inertial>
+
+      <collision name='base_collision'>
+        <pose>0 0 0.01 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.1</radius>
+            <length>0.02</length>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name='base_visual'>
+        <pose>0 0 0.01 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.1</radius>
+            <length>0.02</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+
+      <collision name="base_trunk_collision">
+        <pose>0 0 0.3 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.6</length>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name="base_trunk_visual">
+        <pose>0 0 0.3 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.6</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+
+    </link>
+
+    <joint name="joint_base" type="fixed">
+      <pose>0 0 0 0 0 0</pose>
+        <child>base_link</child>
+        <parent>world</parent>
+        <axis>
+          <xyz>0 0 0</xyz>
+        </axis>
+    </joint>
+
+    <!-- link 1 -->
+    <link name='link_1'>
+      <pose>0 0.04 0.725 0 0 0</pose>
+
+      <inertial>
+        <pose>0 0 0.00099 0 0 0</pose>
+        <inertia>
+          <ixx>0</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0104</iyy>
+          <iyz>0</iyz>
+          <izz>0</izz>
+        </inertia>
+        <mass>0.5</mass>
+      </inertial>
+
+      <collision name='link1_collision'>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.25</length>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name='link1_visual'>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.25</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Orange</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="joint_1" type="revolute">
+      <pose>0 0 -0.125 0 0 0</pose>
+        <child>link_1</child>
+        <parent>base_link</parent>
+        <axis>
+          <dynamics>
+            <damping>0.001</damping>
+            <friction>0.000</friction>
+          </dynamics>
+          <xyz>0 1 0</xyz>
+        </axis>
+    </joint>
+
+    <!--link 2 -->
+    <link name='link_2'>
+      <pose>0 0.08 0.975 0 0 0</pose>
+      
+      <inertial>
+        <pose>0 0 0.00099 0 0 0</pose>
+        <inertia>
+          <ixx>0</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0104</iyy>
+          <iyz>0</iyz>
+          <izz>0</izz>
+        </inertia>
+        <mass>0.5</mass>
+      </inertial>
+
+      <collision name='link2_collision'>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.25</length>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name='link2_visual'>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.25</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Red</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="joint_2" type="revolute">
+      <pose>0 0 -0.125 0 0 0</pose>
+        <child>link_2</child>
+        <parent>link_1</parent>
+        <axis>
+          <dynamics>
+            <damping>0.001</damping>
+            <friction>0.000</friction>
+          </dynamics>
+          <xyz>0 1 0</xyz>
+        </axis>
+    </joint>
+
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/planar_robot</robotNamespace>
+    </plugin>
+
+    <!-- transmission -->
+    <transmission name="joint_1_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="motor1">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+      <joint name="joint_1">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+      </joint>
+    </transmission>
+
+    <transmission name="joint_2_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="motor2">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+      <joint name="joint_2">
+        <hardwareInterface>EffortJointInterface</hardwareInterface>
+      </joint>
+    </transmission>
+
+  </model>
+
+</sdf>

@@ -1,0 +1,60 @@
+<launch>
+
+    <!-- Settings -->
+    <arg name="pause_sim" value="True" />
+
+    <!-- Set initial configuration of robot -->
+    <arg name="joint1" default="1.57"/>
+    <arg name="joint2" default="0.0"/>
+
+    <!-- Start Gazebo -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="paused" value="$(arg pause_sim)"/>
+    </include>
+
+    <!-- Load the robot model to ROS params -->
+    <param name="robot_description" 
+        command="$(find xacro)/xacro --inorder '$(find planar_robot_tutorial)/urdf/planar_robot.xacro'" />
+
+    <!-- Spawn the robot model in Gazebo -->
+    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+            args="-urdf -param robot_description -model planar_robot
+                -J joint_1 $(arg joint1)
+                -J joint_2 $(arg joint2)" />
+
+
+    <!-- Load the robot controller configuration file -->
+    <rosparam file="$(find planar_robot_tutorial)/config/planar_robot_control.yaml" 
+        command="load" />
+
+    <!-- Start the controller -->    
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="/planar_robot" 
+        args="joint_1_position_controller
+                joint_2_position_controller
+                joint_state_controller"/>
+    
+    <node name="controller_spawner_stopped" pkg="controller_manager" type="spawner" respawn="false"
+        output="screen" ns="/planar_robot" 
+        args="--stopped joint_trajectory_controller"/>
+
+    <!-- use joint state publisher -->
+    <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+    <!-- Run motion script -->
+    <!-- <node name="draw_circle" pkg="planar_robot_tutorial" type="draw_circle_2.py"/> -->
+
+    <!-- Run data recorder script -->
+    <node name="data_recorder" pkg="planar_robot_tutorial" type="data_recorder.py"/>
+
+    <!-- Save to rosbag -->
+     <node pkg="rosbag" type="record" name="rosbag_record"
+       args="-O $(find planar_robot_tutorial)/src/move_robot.bag /data_recorder"/> 
+
+    <!-- convert joint states to TF transforms for rviz, etc -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+        respawn="false" output="screen" >
+        <remap from="/joint_states" to="/planar_robot/joint_states" />
+    </node>
+
+</launch>
